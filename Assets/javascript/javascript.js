@@ -1,3 +1,5 @@
+$(document).ready(function(){
+//Firebase config
 var config = {
     apiKey: "AIzaSyAmuZOd-1PTVfEqG2Gpz2SYSQuaxkLS5mw",
     authDomain: "train-scheduler-database-8f38d.firebaseapp.com",
@@ -28,10 +30,10 @@ var config = {
 
   	database.ref().push(newTrain);
 
-  	console.log(newTrain.trainName());
-  	console.log(newTrain.trainDestination());
-  	console.log(newTrain.arrivalTime());
-  	console.log(newTrain.arrivalFrequency());
+  	console.log(newTrain.train);
+  	console.log(newTrain.destination);
+  	console.log(newTrain.arrival);
+  	console.log(newTrain.frequency);
 
   	 $("#train-name-input").val("");
   	 $("#destination-input").val("");
@@ -47,16 +49,24 @@ var config = {
   	var arrivalTime = childSnapshot.val().arrival;
   	var arrivalFrequency = childSnapshot.val().frequency;
 
+  	// First Time (pushed back 1 year to make sure it comes before current time)
   	var firstTime = moment(arrivalTime, "hh:mm").subtract(1, "years");
-
+  	
+  	// Difference between the times
   	var diffTime = moment().diff(moment(firstTime), "minutes");
 
+  	// Time apart (remainder)
   	var tRemainder = diffTime % arrivalFrequency;
 
+  	// Minute Until Train
   	var tMinutesTilTrain = arrivalFrequency - tRemainder;
 
-  	var nextTrain = moment().add(tMinutesTilTrain, "minutes");
+  	// Next Train
+  	var nextTrain = moment(moment().add(tMinutesTilTrain, "minutes")).format("hh:mm A");
+
 
   	$("#train-table > tbody").append("<tr><td>" + trainName + "</td><td>" + trainDestination + "</td><td>" +
-  arrivalFrequency + "</td><td>" + nextTrain + "</td><td>" + tMinutesTilTrain +"</td></tr>");
+  		arrivalFrequency + "</td><td>" + nextTrain + "</td><td>" + tMinutesTilTrain +"</td></tr>");
   });
+
+});
